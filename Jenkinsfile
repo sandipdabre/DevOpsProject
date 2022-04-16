@@ -4,7 +4,7 @@ pipeline {
         stage('compile') {
 	   steps {
                 echo 'compiling..'
-		git url: 'https://github.com/sandipdabre/devops_project'
+		git url: 'https://github.com/sandipdabre/DevOpsProject.git'
 		sh script: '/usr/bin/mvn compile'
            }
         }
