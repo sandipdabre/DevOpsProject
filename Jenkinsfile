@@ -5,13 +5,13 @@ pipeline {
 	   steps {
                 echo 'compiling..'
 		git url: 'https://github.com/sandipdabre/DevOpsProject.git'
-		sh script: '/usr/bin/mvn compile'
+		sh script: 'mvn compile'
            }
         }
         stage('codereview-pmd') {
 	   steps {
                 echo 'codereview..'
-		sh script: '/usr/bin/mvn -P metrics pmd:pmd'
+		sh script: 'mvn -P metrics pmd:pmd'
            }
 	   post {
                success {
@@ -22,7 +22,7 @@ pipeline {
         stage('unit-test') {
 	   steps {
                 echo 'unittest..'
-	        sh script: '/usr/bin/mvn test'
+	        sh script: 'mvn test'
                  }
 	   post {
                success {
@@ -33,7 +33,7 @@ pipeline {
         stage('codecoverate') {
 	   steps {
                 echo 'codecoverage..'
-		sh script: '/usr/bin/mvn cobertura:cobertura -Dcobertura.report.format=xml'
+		sh script: 'mvn cobertura:cobertura -Dcobertura.report.format=xml'
            }
 	   post {
                success {
@@ -44,7 +44,7 @@ pipeline {
         stage('package') {
 	   steps {
                 echo 'package......'
-		sh script: '/usr/bin/mvn package'	
+		sh script: 'mvn package'	
            }		
         }
     }
