@@ -5,7 +5,7 @@
     <groupId>com.devopsdemo.tutorial</groupId>
     <artifactId>sampleapp</artifactId>
     <packaging>war</packaging>
-    <version>3.3.2</version>
+    <version>3.1.0</version>
     <name>Vaadin Sampleapp example</name>
 
     <properties>
