@@ -1,51 +1,33 @@
 pipeline {
     agent any
+
     stages {
-        stage('compile') {
-	   steps {
-                echo 'compiling..'
-		git url: 'https://github.com/sandipdabre/DevOpsProject.git'
-		sh script: 'mvn compile'
-           }
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-        stage('codereview-pmd') {
-	   steps {
-                echo 'codereview..'
-		sh script: 'mvn -P metrics pmd:pmd'
-           }
-	   post {
-               success {
-		   recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
-               }
-           }		
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
         }
-        stage('unit-test') {
-	   steps {
-                echo 'unittest..'
-	        sh script: 'mvn test'
-                 }
-	   post {
-               success {
-                   junit 'target/surefire-reports/*.xml'
-               }
-           }			
+        stage('Copy WAR from local to repo') {
+            steps {
+                sh 'docker cp /var/lib/jenkins/workspace
+/work/target/*.war rouiss-tomcat:/user/local/tomcat/webapps/*.war '
+            }
         }
-        stage('codecoverate') {
-	   steps {
-                echo 'codecoverage..'
-		sh script: 'mvn cobertura:cobertura -Dcobertura.report.format=xml'
-           }
-	   post {
-               success {
-	           cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false                  
-               }
-           }		
-        }
-        stage('package') {
-	   steps {
-                echo 'package......'
-		sh script: 'mvn package'	
-           }		
+        stage('Push to GitHub') {
+            steps {
+                sh '''
+                git config user.email "smdrouis@gmail.com"
+                git config user.name "Samidox"
+                git *.war
+                git commit -m "Auto-commit: Add generated WAR file"
+                git push https://${Samidox}:${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}@github.com/${Samidox}/${docker}.git
+                '''
+            }
         }
     }
 }
