@@ -1,30 +1,32 @@
 pipeline {
     agent any
-    
-    parameters {
-         string(name: 'staging_server', defaultValue: '13.232.37.20', description: 'Remote Staging Server')
-    }
 
-stages{
-        stage('Build'){
+    stages {
+        stage('Checkout') {
             steps {
-                sh 'mvn clean package'
-            }
-            post {
-                success {
-                    echo 'Archiving the artifacts'
-                    archiveArtifacts artifacts: '**/target/*.war'
-                }
+                checkout scm
             }
         }
-
-        stage ('Deployments'){
-            parallel{
-                stage ("Deploy to Staging"){
-                    steps {
-                        sh "deploy adapters: [tomcat9(credentialsId: '97c4d89f-f8e3-4fc6-b666-e8f05ebf306c', path: '', url: 'http://18.217.195.195:8080/')], contextPath: null, war: '**/*.war'"
-                    }
-                }
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        stage('Copy WAR from local to repo') {
+            steps {
+                sh 'docker cp /var/lib/jenkins/workspace
+/work/target/*.war rouiss-tomcat:/user/local/tomcat/webapps/*.war '
+            }
+        }
+        stage('Push to GitHub') {
+            steps {
+                sh '''
+                git config user.email "smdrouis@gmail.com"
+                git config user.name "Samidox"
+                git *.war
+                git commit -m "Auto-commit: Add generated WAR file"
+                git push https://${Samidox}:${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}@github.com/${Samidox}/${docker}.git
+                '''
             }
         }
     }
