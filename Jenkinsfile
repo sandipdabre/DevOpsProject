@@ -1,32 +1,58 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout') {
+        stage('compile') {
             steps {
-                checkout scm
+                echo 'compiling..'
+                git url: 'https://github.com/Samidox/DevOpsProject.git'
+                sh script: 'mvn compile'
             }
         }
-        stage('Build') {
+        stage('codereview-pmd') {
             steps {
-                sh 'mvn clean install'
+                echo 'codereview..'
+                sh script: 'mvn -P metrics pmd:pmd'
+            }
+            post {
+                success {
+                    recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
+                }
             }
         }
-        stage('Copy WAR from local to repo') {
+        stage('unit-test') {
             steps {
-                sh 'docker cp /var/lib/jenkins/workspace
-/work/target/*.war rouiss-tomcat:/user/local/tomcat/webapps/*.war '
+                echo 'unittest..'
+                sh script: 'mvn test'
+            }
+            post {
+                success {
+                    junit 'target/surefire-reports/*.xml'
+                }
             }
         }
-        stage('Push to GitHub') {
+        stage('codecoverage') {
             steps {
-                sh '''
-                git config user.email "smdrouis@gmail.com"
-                git config user.name "Samidox"
-                git *.war
-                git commit -m "Auto-commit: Add generated WAR file"
-                git push https://${Samidox}:${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}@github.com/${Samidox}/${docker}.git
-                '''
+                echo 'codecoverage..'
+                sh script: 'mvn cobertura:cobertura -Dcobertura.report.format=xml'
+            }
+            post {
+                success {
+                    cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+                }
+            }
+        }
+        stage('sonarqube-analysis') {
+            steps {
+                echo 'Running SonarQube analysis..'
+                withSonarQubeEnv('SonarQube') {
+                    sh script: 'mvn sonar:sonar'
+                }
+            }
+        }
+        stage('package') {
+            steps {
+                echo 'package......'
+                sh script: 'mvn package'
             }
         }
     }
