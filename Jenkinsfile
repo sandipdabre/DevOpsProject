@@ -21,8 +21,8 @@ pipeline {
         stage('Build and Run Docker Container') {
             steps {
                 script {
-                    docker.build("my-tomcat-app:${params.ENVIRONMENT}", '.')
-                    docker.image("my-tomcat-app:${params.ENVIRONMENT}").run('-p 8089:8080 -d')
+                    sh 'docker build -t my-tomcat-app:vannlatest .'
+                    sh 'docker run -p 8083:8080 my-tomcat-app:vannlatest'
                 }
             }
         }
@@ -33,7 +33,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "docker push my-tomcat-app:${params.ENVIRONMENT}"
+                    sh "docker push my-tomcat-app:vannlatest"
                 }
             }
         }
