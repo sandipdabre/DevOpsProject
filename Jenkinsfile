@@ -1,51 +1,62 @@
 pipeline {
     agent any
+
     stages {
-        stage('compile') {
-	   steps {
-                echo 'compiling..'
-		git url: 'https://github.com/sandipdabre/DevOpsProject.git'
-		sh script: 'mvn compile'
-           }
+        stage('Checkout') {
+            steps {
+                // Retrieve the source code from version control
+                checkout scm
+            }
         }
-        stage('codereview-pmd') {
-	   steps {
-                echo 'codereview..'
-		sh script: 'mvn -P metrics pmd:pmd'
-           }
-	   post {
-               success {
-		   recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
-               }
-           }		
+
+        stage('Build and Package') {
+            steps {
+                script {
+                    // Build and package the Spring Boot application using Maven
+                    sh 'mvn clean package'
+                }
+            }
         }
-        stage('unit-test') {
-	   steps {
-                echo 'unittest..'
-	        sh script: 'mvn test'
-                 }
-	   post {
-               success {
-                   junit 'target/surefire-reports/*.xml'
-               }
-           }			
+
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             // Build Docker image
+        //             docker.build('my-spring-boot-app:latest')
+        //         }
+        //     }
+        // }
+
+        // stage('Run Docker Container') {
+        //     steps {
+        //         script {
+        //             // Run Docker container
+        //             docker.image('my-spring-boot-app:latest').run('-p 8080:8080 -d')
+        //         }
+        //     }
+        // }
+
+        // stage('Deploy') {
+        //     when {
+        //         expression { params.ENVIRONMENT == 'prod' }
+        //     }
+        //     steps {
+        //         script {
+        //             // Additional deployment steps for production (e.g., push to Docker registry)
+        //             // This step is conditional for the 'prod' environment
+        //         }
+        //     }
+        // }
+    }
+
+    post {
+        success {
+            echo 'Docker build and deployment succeeded!'
         }
-        stage('codecoverate') {
-	   steps {
-                echo 'codecoverage..'
-		sh script: 'mvn cobertura:cobertura -Dcobertura.report.format=xml'
-           }
-	   post {
-               success {
-	           cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false                  
-               }
-           }		
-        }
-        stage('package') {
-	   steps {
-                echo 'package......'
-		sh script: 'mvn package'	
-           }		
+
+        failure {
+            echo 'Docker build or deployment failed! Sending notifications...'
+            // Send notifications or perform actions on failure
         }
     }
 }
