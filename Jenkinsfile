@@ -21,7 +21,7 @@ pipeline {
         }
 
         failure {
-            echo Copying Git folder is failed!'
+            echo 'Copying Git folder is failed!'
         }
     }
 }
