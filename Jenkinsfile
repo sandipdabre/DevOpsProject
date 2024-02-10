@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     docker.build("my-tomcat-app:${params.ENVIRONMENT}", '.')
-                    docker.image("my-tomcat-app:${params.ENVIRONMENT}").run('-p 8080:8080 -d')
+                    docker.image("my-tomcat-app:${params.ENVIRONMENT}").run('-p 8089:8080 -d')
                 }
             }
         }
