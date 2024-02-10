@@ -7,7 +7,6 @@ pipeline {
                 checkout scm
             }
         }
-
         stage('Copy git folder') {
             steps {
                 script {
