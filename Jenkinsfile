@@ -11,12 +11,11 @@ pipeline {
         stage('Copy git folder') {
             steps {
                 script {
-                    //to copy git folder
+                    //to copy git folder to myGit
                     sh 'mkdir myGit'
                     sh 'cp * myGit/'
                 }
             }
         }
-  
-}
+    }
 }
