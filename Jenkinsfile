@@ -21,8 +21,8 @@ pipeline {
         stage('Build and Run Docker Container') {
             steps {
                 script {
-                    sh 'sudo docker build -t my-tomcat-app:vannlatest .'
-                    sh 'sudo docker run -p 8081:8080 my-tomcat-app:vannlatest'
+                    sh 'docker build -t my-tomcat-app:vannlatest .'
+                    sh 'docker run -p 8081:8080 my-tomcat-app:vannlatest'
                 }
             }
         }
