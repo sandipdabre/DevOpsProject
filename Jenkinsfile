@@ -22,8 +22,9 @@ pipeline {
             steps {
                 timeout(time: 2, unit: 'MINUTES') {
                 script {
-                    sh 'docker build -t my-tomcat-app:vannlatest .'
+                    sh 'docker build -t my-tomcat-app:vannlatest1 .'
                     //sh 'docker run -p 8081:8080 my-tomcat-app:vannlatest'
+                    sh 'docker tag my-tomcat-app:vannlatest1 vannsann/my-tomcat-app:vannlatest1'
                 }
                 }
             }
