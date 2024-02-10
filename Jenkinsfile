@@ -6,7 +6,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Retrieve the source code from version control
                 checkout scm
             }
         }
@@ -14,41 +13,32 @@ pipeline {
         stage('Build and Package') {
             steps {
                 script {
-                    // Build and package the Spring Boot application using Maven
                     sh 'mvn clean package'
                 }
             }
         }
 
-       stage('Build Docker Image') {
+        stage('Build and Run Docker Container') {
             steps {
                 script {
-                    // Build Docker image
-                    docker.build('my-tomcat-app:latest', '.')
+                    docker.build("my-tomcat-app:${params.ENVIRONMENT}", '.')
+                    docker.image("my-tomcat-app:${params.ENVIRONMENT}").run('-p 8080:8080 -d')
                 }
             }
         }
 
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    // Run Docker container
-                    docker.image('my-tomcat-app:latest').run('-p 8080:8080 -d')
-                }
-            }
-        }
         stage('Deploy') {
             when {
                 expression { params.ENVIRONMENT == 'prod' }
             }
             steps {
                 script {
-                    // Additional deployment steps for production (e.g., push to Docker registry)
-                    sh 'docker push my-tomcat-app:latest'
+                    sh "docker push my-tomcat-app:${params.ENVIRONMENT}"
                 }
             }
         }
     }
+
     post {
         success {
             echo 'Docker build and deployment succeeded!'
