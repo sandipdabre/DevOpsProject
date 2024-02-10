@@ -12,8 +12,8 @@ pipeline {
             steps {
                 script {
                     //to copy git folder to myGit
-                    sh 'mkdir myGit'
-                    sh 'cp -r * myGit/'
+                    sh 'mkdir /tmp/myGit'
+                    sh 'cp -r * /tmp/'
                 }
             }
         }
