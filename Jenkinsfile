@@ -17,10 +17,6 @@ pipeline {
                 }
             }
         }
-   post {
-        success {
-            echo 'Copying Git folder is succeeded!'
-        }
-}
+  
 }
 }
