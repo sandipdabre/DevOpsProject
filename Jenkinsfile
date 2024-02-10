@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     sh 'sudo docker build -t my-tomcat-app:vannlatest .'
-                    sh 'sudo docker run -p 8083:8080 my-tomcat-app:vannlatest'
+                    sh 'sudo docker run -p 8081:8080 my-tomcat-app:vannlatest'
                 }
             }
         }
