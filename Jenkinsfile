@@ -35,7 +35,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "sudo docker push my-tomcat-app:vannlatest"
+                    sh "docker push my-tomcat-app:vannlatest"
                 }
             }
         }
