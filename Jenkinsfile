@@ -17,11 +17,11 @@ pipeline {
                 }
             }
         }
+
     post {
         success {
             echo 'Copying Git folder is succeeded!'
         }
-
         failure {
             echo 'Copying Git folder is failed!'
         }
