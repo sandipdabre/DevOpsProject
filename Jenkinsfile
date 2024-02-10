@@ -13,7 +13,7 @@ pipeline {
                 script {
                     //to copy git folder to myGit
                     sh 'mkdir myGit'
-                    sh 'cp * myGit/'
+                    sh 'cp -r * myGit/'
                 }
             }
         }
