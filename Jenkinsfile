@@ -20,9 +20,11 @@ pipeline {
 
         stage('Build and Run Docker Container') {
             steps {
+                timeout(time: 5, unit: 'MINUTES') {
                 script {
                     sh 'docker build -t my-tomcat-app:vannlatest .'
                     sh 'docker run -p 8081:8080 my-tomcat-app:vannlatest'
+                }
                 }
             }
         }
