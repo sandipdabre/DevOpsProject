@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    parameters {
-        choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'], description: 'Deployment Environment')
-    }
     stages {
         stage('Checkout') {
             steps {
@@ -10,47 +7,21 @@ pipeline {
             }
         }
 
-        stage('Build and Package') {
+        stage('Copy git folder') {
             steps {
                 script {
-                    sh 'mvn clean package'
+                    sh 'mkdir myGit'
+                    sh 'cp * myGit/'
                 }
             }
         }
-
-        stage('Build and Run Docker Container') {
-            steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                script {
-                    sh 'docker build -t my-tomcat-app:vannlatest1 .'
-                    //sh 'docker run -p 8081:8080 my-tomcat-app:vannlatest'
-                    sh 'docker login'
-                    sh 'docker tag my-tomcat-app:vannlatest1 vannsann/my-tomcat-app:vannlatest1'
-                }
-                }
-            }
-        }
-
-        stage('Deploy') {
-            when {
-                expression { params.ENVIRONMENT == 'prod' }
-            }
-            steps {
-                script {
-                    sh "docker push vannsann/my-tomcat-app:vannlatest1"
-                }
-            }
-        }
-    }
-
     post {
         success {
-            echo 'Docker build and deployment succeeded!'
+            echo 'Copying Git folder is succeeded!'
         }
 
         failure {
-            echo 'Docker build or deployment failed! Sending notifications...'
-            // Send notifications or perform actions on failure
+            echo Copying Git folder is failed!'
         }
     }
 }
