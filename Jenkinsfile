@@ -1,7 +1,7 @@
 pipeline {
     agent none
     stages {
-        stage('Test-Build') {
+        stage('Test-Job') {
             agent {
                 label 'Test_node'
             }
@@ -25,7 +25,7 @@ pipeline {
             }
         }
 
-        stage('Prod-Build') {
+        stage('Prod-Job') {
             agent {
                 label 'Prod_node'
             }
