@@ -1,17 +1,45 @@
 pipeline {
-    agent any
+    agent {
+        none  // No default agent; stages specify where to run
+    }
     stages {
-        stage('Checkout') {
+        stage('Test-Build') {
+            agent {
+                label 'Test-node'
+            }
             steps {
-                //to checkout git repository
-                checkout scm
+                echo 'Running Test job on Test-node...'
+                script {
+                    echo 'Checking out the Git repository...'
+                    checkout scm
+
+                    echo 'Creating /tmp/myGit directory if it does not exist...'
+                    sh '[ -d "/tmp/myGit" ] || mkdir "/tmp/myGit"'
+                    
+
+                    // Run your test job here, replace the command below with your actual test command
+                    def testResult = sh(script: 'cp -r * /tmp/myGit/', returnStatus: true)
+
+                    // Check if the test job is successful
+                    if (testResult != 0) {
+                        error 'Test job failed. Aborting the build.'
+                    }
+                }
             }
         }
-        stage('Copy git folder') {
+
+        stage('Prod-Build') {
+            agent {
+                label 'Prod-node'
+            }
             steps {
+                echo 'Checking out the Git repository...'
                 script {
-                    //to copy git folder to myGit
-                    sh 'mkdir /tmp/myGit'
+                    echo 'Checking out the Git repository...'
+                    checkout scm
+
+                    echo 'Creating /tmp/myGit directory if it does not exist...'
+                    sh '[ -d "/tmp/myGit" ] || mkdir "/tmp/myGit"'
                     sh 'cp -r * /tmp/myGit/'
                 }
             }
