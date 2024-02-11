@@ -1,11 +1,9 @@
 pipeline {
-    agent {
-        none  // No default agent; stages specify where to run
-    }
+    agent none
     stages {
         stage('Test-Build') {
             agent {
-                label 'Test-node'
+                label 'Test_node'
             }
             steps {
                 echo 'Running Test job on Test-node...'
@@ -30,7 +28,7 @@ pipeline {
 
         stage('Prod-Build') {
             agent {
-                label 'Prod-node'
+                label 'Prod_node'
             }
             steps {
                 echo 'Checking out the Git repository...'
