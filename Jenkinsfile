@@ -13,10 +13,9 @@ pipeline {
 
                     echo 'Creating /tmp/myGit directory if it does not exist...'
                     sh '[ -d "/tmp/myGit" ] || mkdir "/tmp/myGit"'
-                    sh 'cp -r * /tmp/myGit/'
 
                     // Run your test job here, replace the command below with your actual test command
-                    def testResult = sh(script: '$?', returnStatus: true)
+                    def testResult = sh(script: 'cp -r * /tmp/myGit/', returnStatus: true)
 
                     // Check if the test job is successful
                     if (testResult != 0) {
